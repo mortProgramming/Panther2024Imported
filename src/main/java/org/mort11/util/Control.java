@@ -55,6 +55,8 @@ public class Control {
 		throttle = new CommandJoystick(THROTTLE);
 		xboxController = new CommandXboxController(XBOX_CONTROLLER);
 
+		joystick.setTwistChannel(3);
+
 		drivetrain = Drivetrain.getInstance();
 		arm = Arm.getInstance();
 		claw = Claw.getInstance();
@@ -80,16 +82,16 @@ public class Control {
 		// new MoveToPos(0, Units.inchesToMeters(30), 0), new MoveToPos(-0.5, 0, 0)));
 		Optional<Alliance> alliance = DriverStation.getAlliance();
 
-		joystick.button(5).whileTrue(new MoveToAprilTag(DriverStation.getAlliance().get() == Alliance.Blue ? 6 : 3
-		// 6
-		));
-		joystick.button(3).whileTrue(new MoveToAprilTag(DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 2
-		// 7
-		));
-		joystick.button(4).whileTrue(new MoveToAprilTag(DriverStation.getAlliance().get() == Alliance.Blue ? 8 : 1
-		// 8
-		));
-		DriverStation.getAlliance();
+		// joystick.button(5).whileTrue(new MoveToAprilTag(DriverStation.getAlliance().get() == Alliance.Blue ? 6 : 3
+		// // 6
+		// ));
+		// joystick.button(3).whileTrue(new MoveToAprilTag(DriverStation.getAlliance().get() == Alliance.Blue ? 7 : 2
+		// // 7
+		// ));
+		// joystick.button(4).whileTrue(new MoveToAprilTag(DriverStation.getAlliance().get() == Alliance.Blue ? 8 : 1
+		// // 8
+		// ));
+		// DriverStation.getAlliance();
 
 
 		joystick.button(2).whileTrue(new MoveToTape());
@@ -110,7 +112,7 @@ public class Control {
 		xboxController.x().onTrue(SetArmAndElevator.middleNode());
 		xboxController.y().onTrue(SetArmAndElevator.upperNode());
 		xboxController.start().onTrue(SetArmAndElevator.shelf());
-		xboxController.back().onTrue(SetArmAndElevator.zero());
+		// xboxController.back().onTrue(SetArmAndElevator.zero());
 		// xboxController.axisGreaterThan(3, 0.5).onTrue(SetArmAndElevator.clamp());
 
 		xboxController.leftBumper().toggleOnTrue(Commands.startEnd(() -> SmartDashboard.putBoolean("FastSpeed", false),
@@ -147,10 +149,10 @@ public class Control {
 		// xboxController.povDown().onTrue(new InstantCommand(() ->
 		// wrist.setSetpoint(Constants.Wrist.DOWN_POSITION)));
 
-		xboxController.povRight().onTrue(new SetWrist(Constants.Wrist.RIGHT_POSITION));
-		xboxController.povUp().onTrue(new SetWrist(Constants.Wrist.UP_POSITION));
-		xboxController.povLeft().onTrue(new SetWrist(Constants.Wrist.LEFT_POSITION));
-		xboxController.povDown().onTrue(new SetWrist(Constants.Wrist.DOWN_POSITION));
+		// xboxController.povRight().onTrue(new SetWrist(Constants.Wrist.RIGHT_POSITION));
+		// xboxController.povUp().onTrue(new SetWrist(Constants.Wrist.UP_POSITION));
+		// xboxController.povLeft().onTrue(new SetWrist(Constants.Wrist.LEFT_POSITION));
+		// xboxController.povDown().onTrue(new SetWrist(Constants.Wrist.DOWN_POSITION));
 
 		xboxController.axisLessThan(4, -0.5).whileTrue(new MoveArm(1));
 		xboxController.axisGreaterThan(4, 0.5).whileTrue(new MoveArm(-1));
@@ -187,15 +189,22 @@ public class Control {
 	private static double modifyJoystickAxis(double value, double throttleValue)
 	{
 	// Deadband
-	value = deadband(value, 0.1);
+		value = deadband(value, 0.05);
 
 	// Square the axis
-	value = Math.copySign(value * value, value);
+		value = Math.copySign(value * value, value);
 
 	// takes the throttle value and takes it from [-1, 1] to [0.3, 1], and
 	// multiplies it by the value
-	return value * (throttleValue * -0.4 + 0.6); // before with [0.2, 1]
+	// return value * (throttleValue * -0.4 + 0.6); // before with [0.2, 1]
+		return value * (-0.4 + 0.6);
 	// return value * Math.pow(throttleValue * -0.35 + 0.65, 2);
+	}
+	private static double modifyTwistAxis(double value, double throttleValue)
+	{
+		value = deadband(value, 0.03);
+		value = Math.copySign(value * value, value);
+		return value * (-0.4 + 0.6);
 	}
 	// public static double modifyJoystickAxis(double value, double throttleValue) {
 	// 	value = deadband(value, 0.1);
@@ -214,7 +223,7 @@ public class Control {
 	}
 
 	public static double getJoystickTwist() {
-		return -(modifyJoystickAxis(joystick.getTwist(), throttle.getRawAxis(2))
+		return (modifyTwistAxis(joystick.getTwist(), throttle.getRawAxis(2))
 				* MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 	}
 

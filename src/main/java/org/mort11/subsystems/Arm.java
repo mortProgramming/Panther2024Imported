@@ -55,7 +55,7 @@ public class Arm extends SubsystemBase {
 		// armController = new PIDController(KP, KI, KD);
 		// armController.setTolerance(TOLERANCE);
 
-		armController = new ProfiledPIDController(KP, KI, KD, new Constraints(500000, 250000));
+		armController = new ProfiledPIDController(KP, KI, KD, KCONSTRAINTS);
 
 		feedforward = new SimpleMotorFeedforward(KS, KV, KA);
 

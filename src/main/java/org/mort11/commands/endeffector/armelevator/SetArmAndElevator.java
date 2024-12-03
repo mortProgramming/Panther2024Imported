@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
 public class SetArmAndElevator extends SequentialCommandGroup {
 	public SetArmAndElevator(double armSetpoint, double elevatorSetpoint) {
-		addCommands(new SetArm(Constants.Arm.REST_POSITION).withTimeout(0.56), new SetElevator(elevatorSetpoint).andThen(new SetArm(armSetpoint))
+		addCommands(new SetArm(Constants.Arm.REST_POSITION).withTimeout(0.75), new SetElevator(elevatorSetpoint).andThen(new SetArm(armSetpoint))
 				);
 	}
 

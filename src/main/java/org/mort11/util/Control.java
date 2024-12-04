@@ -205,6 +205,7 @@ public class Control {
 		value = deadband(value, 0.03);
 		value = Math.copySign(value * value, value);
 		return value * (-0.4 + 0.6);
+		//Changed thingy to 1 not 0.6
 	}
 	// public static double modifyJoystickAxis(double value, double throttleValue) {
 	// 	value = deadband(value, 0.1);
@@ -215,17 +216,30 @@ public class Control {
 	// }
 
 	public static double getJoystickX() {
-		return -(modifyJoystickAxis(joystick.getX(), throttle.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND) * 0.75;
+		return -(modifyJoystickAxis(joystick.getX(), -joystick.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
 	}
 
 	public static double getJoystickY() {
-		return -(modifyJoystickAxis(joystick.getY(), throttle.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
+		return -(modifyJoystickAxis(joystick.getY(), -joystick.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
 	}
 
 	public static double getJoystickTwist() {
-		return (modifyTwistAxis(joystick.getTwist(), throttle.getRawAxis(2))
+		return (modifyTwistAxis(joystick.getTwist(), -joystick.getRawAxis(2))
 				* MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 	}
+
+	// public static double getJoystickX() {
+	// 	return -(modifyJoystickAxis(joystick.getX(), throttle.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
+	// }
+
+	// public static double getJoystickY() {
+	// 	return -(modifyJoystickAxis(joystick.getY(), throttle.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
+	// }
+
+	// public static double getJoystickTwist() {
+	// 	return (modifyTwistAxis(joystick.getTwist(), throttle.getRawAxis(2))
+	// 			* MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+	// }
 
 	public static void setControllerRumble(double value) {
 		xboxController.getHID().setRumble(RumbleType.kBothRumble, value);

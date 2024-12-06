@@ -37,8 +37,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class Control {
 	private static CommandJoystick joystick;
-	private static CommandJoystick throttle;
-	private static CommandXboxController xboxController;
+	private static CommandXboxController driverController, xboxController;
 
 	private static Drivetrain drivetrain;
 	private static Arm arm;
@@ -52,9 +51,10 @@ public class Control {
 	 */
 	public static void init() {
 		joystick = new CommandJoystick(JOYSTICK);
-		throttle = new CommandJoystick(THROTTLE);
+		driverController = new CommandXboxController(THROTTLE);
 		xboxController = new CommandXboxController(XBOX_CONTROLLER);
 
+		joystick.setThrottleChannel(2);
 		joystick.setTwistChannel(3);
 
 		drivetrain = Drivetrain.getInstance();
@@ -71,8 +71,7 @@ public class Control {
 	 * Configure default commands and button bindings
 	 */
 	public static void configure() {
-		drivetrain.setDefaultCommand(
-				new Drive(Control::getJoystickY, Control::getJoystickX, Control::getJoystickTwist, true));
+		
 		floortake.setDefaultCommand(new Stow());
 		// claw.setDefaultCommand(new ClawtakeDefault());
 
@@ -154,11 +153,23 @@ public class Control {
 		// xboxController.povLeft().onTrue(new SetWrist(Constants.Wrist.LEFT_POSITION));
 		// xboxController.povDown().onTrue(new SetWrist(Constants.Wrist.DOWN_POSITION));
 
-		xboxController.axisLessThan(4, -0.5).whileTrue(new MoveArm(1));
-		xboxController.axisGreaterThan(4, 0.5).whileTrue(new MoveArm(-1));
+		// xboxController.axisLessThan(4, -0.5).whileTrue(new MoveArm(1));
+		// xboxController.axisGreaterThan(4, 0.5).whileTrue(new MoveArm(-1));
 
-		xboxController.axisLessThan(5, -0.5).whileTrue(new MoveElevator(0.2));
-		xboxController.axisGreaterThan(5, 0.5).whileTrue(new MoveElevator(-0.2));
+		// xboxController.axisLessThan(5, -0.5).whileTrue(new MoveElevator(0.2));
+		// xboxController.axisGreaterThan(5, 0.5).whileTrue(new MoveElevator(-0.2));
+	}
+
+	public static void configureJoystick() {
+		drivetrain.setDefaultCommand(
+			new Drive(Control::getJoystickY, Control::getJoystickX, Control::getJoystickTwist, true)
+		);
+	}
+
+	public static void configureController() {
+		drivetrain.setDefaultCommand(
+			new Drive(Control::getControllerY, Control::getControllerX, Control::getControllerTwist, true)
+		);
 	}
 
 	/**
@@ -194,17 +205,20 @@ public class Control {
 	// Square the axis
 		value = Math.copySign(value * value, value);
 
+		throttleValue = (throttleValue + 1) / 2;
+
 	// takes the throttle value and takes it from [-1, 1] to [0.3, 1], and
 	// multiplies it by the value
 	// return value * (throttleValue * -0.4 + 0.6); // before with [0.2, 1]
-		return value * (-0.4 + 0.6);
+		return value * (throttleValue * 0.8 + 0.2);
 	// return value * Math.pow(throttleValue * -0.35 + 0.65, 2);
 	}
 	private static double modifyTwistAxis(double value, double throttleValue)
 	{
 		value = deadband(value, 0.03);
 		value = Math.copySign(value * value, value);
-		return value * (-0.4 + 0.6);
+		throttleValue = (throttleValue + 1) / 2;
+		return value * (0.2);
 		//Changed thingy to 1 not 0.6
 	}
 	// public static double modifyJoystickAxis(double value, double throttleValue) {
@@ -216,15 +230,28 @@ public class Control {
 	// }
 
 	public static double getJoystickX() {
-		return -(modifyJoystickAxis(joystick.getX(), -joystick.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
+		return -(modifyJoystickAxis(joystick.getX(), -joystick.getThrottle()) * MAX_VELOCITY_METERS_PER_SECOND);
 	}
 
 	public static double getJoystickY() {
-		return -(modifyJoystickAxis(joystick.getY(), -joystick.getRawAxis(2)) * MAX_VELOCITY_METERS_PER_SECOND);
+		return -(modifyJoystickAxis(joystick.getY(), -joystick.getThrottle()) * MAX_VELOCITY_METERS_PER_SECOND);
 	}
 
 	public static double getJoystickTwist() {
-		return (modifyTwistAxis(joystick.getTwist(), -joystick.getRawAxis(2))
+		return (modifyTwistAxis(joystick.getTwist(), -joystick.getThrottle())
+				* MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
+	}
+
+	public static double getControllerX() {
+		return -(modifyJoystickAxis(driverController.getLeftX(), -joystick.getThrottle()) * MAX_VELOCITY_METERS_PER_SECOND);
+	}
+
+	public static double getControllerY() {
+		return -(modifyJoystickAxis(driverController.getLeftY(), -joystick.getThrottle()) * MAX_VELOCITY_METERS_PER_SECOND);
+	}
+
+	public static double getControllerTwist() {
+		return (modifyTwistAxis(driverController.getRightX(), -joystick.getThrottle())
 				* MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 	}
 

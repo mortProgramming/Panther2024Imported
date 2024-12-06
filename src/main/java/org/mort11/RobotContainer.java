@@ -36,6 +36,8 @@ public class RobotContainer {
 
 		Control.init();
 		Control.configure();
+		// Control.configureJoystick();
+		Control.configureController();
 
 		Auto.init();
 

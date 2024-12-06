@@ -110,9 +110,15 @@ public final class Constants {
 
 		// public final static int LIMIT_SWITCH = 4;
 
+		// public final static double FLOOR_POSITION = 0.2;
+		// public final static double SHELF_POSITION = 56; // 59
+		// public final static double MIDDLE_NODE_POSITION = 60.6;
+		// public final static double UPPER_NODE_POSITION = 85;
+		// public final static double CARRIAGE_UP = 32.0;
+
 		public final static double FLOOR_POSITION = 0.2;
-		public final static double SHELF_POSITION = 56; // 59
-		public final static double MIDDLE_NODE_POSITION = 60.6;
+		public final static double SHELF_POSITION = 45; // 59
+		public final static double MIDDLE_NODE_POSITION = 60;
 		public final static double UPPER_NODE_POSITION = 85;
 		public final static double CARRIAGE_UP = 32.0;
 
@@ -140,7 +146,7 @@ public final class Constants {
 
 		//public final static double FLOOR_POSITION = 55000;
 		public final static double SCORING_POSITION = 2; // 5.9 // -6000
-		public final static double REST_POSITION = -2; //2.21
+		public final static double REST_POSITION = -3; //2.21
 		public final static double CLAMP_POSITION = REST_POSITION; // 7.7
 
 		// TODO: elevator 20 when we can drop arm

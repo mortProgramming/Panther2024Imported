@@ -218,9 +218,10 @@ public class Control {
 		value = deadband(value, 0.03);
 		value = Math.copySign(value * value, value);
 		throttleValue = (throttleValue + 1) / 2;
-		return value * (0.2);
+		return value * (throttleValue * 0.8 + 0.2);
 		//Changed thingy to 1 not 0.6
 	}
+
 	// public static double modifyJoystickAxis(double value, double throttleValue) {
 	// 	value = deadband(value, 0.1);
 
@@ -238,7 +239,7 @@ public class Control {
 	}
 
 	public static double getJoystickTwist() {
-		return (modifyTwistAxis(joystick.getTwist(), -joystick.getThrottle())
+		return (modifyJoystickAxis(joystick.getTwist(), -joystick.getThrottle())
 				* MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND);
 	}
 
